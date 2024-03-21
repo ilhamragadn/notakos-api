@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('gambar');
             $table->string('judul');
-            $table->string('deskripsi');
+            $table->string('deskripsi')->nullable();
             $table->integer('uang_masuk');
             $table->string('sumber_uang_masuk');
             $table->enum('kategori_uang_masuk', ['Cash', 'Cashless']);

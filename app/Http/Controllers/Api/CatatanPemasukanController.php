@@ -27,7 +27,7 @@ class CatatanPemasukanController extends Controller
      */
     public function store(Request $request)
     {
-        $validatePemasukan = Validator::make([
+        $validatePemasukan = Validator::make($request->all(), [
             'gambar' => 'image|mimes:png,jpg,jpeg,gif,svg|max:5120',
             'judul' => 'required|min:5',
             'uang_masuk' => 'numeric',
@@ -46,6 +46,7 @@ class CatatanPemasukanController extends Controller
         $dataPemasukan = new CatatanPemasukan;
         $dataPemasukan->gambar = $gambar->hashName();
         $dataPemasukan->judul = $request->judul;
+        $dataPemasukan->deskripsi = $request->deskripsi;
         $dataPemasukan->uang_masuk = intval($request->uang_masuk);
         $dataPemasukan->sumber_uang_masuk = $request->sumber_uang_masuk;
         $dataPemasukan->kategori_uang_masuk = $request->kategori_uang_masuk;
@@ -62,7 +63,7 @@ class CatatanPemasukanController extends Controller
     {
         $dataPemasukan = CatatanPemasukan::find($id);
 
-        return new CatatanPemasukanResource(true, 'Detail Catatan Pemasukan Berdasarkan Id', $dataPemasukan);
+        return new CatatanPemasukanResource(true, 'Detail Catatan Pemasukan ID ' . $id, $dataPemasukan);
     }
 
     /**
@@ -70,7 +71,7 @@ class CatatanPemasukanController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validatePemasukan = Validator::make([
+        $validatePemasukan = Validator::make($request->all(), [
             'gambar' => 'image|mimes:png,jpg,jpeg,gif,svg|max:5120',
             'judul' => 'required|min:5',
             'uang_masuk' => 'numeric',
@@ -86,11 +87,12 @@ class CatatanPemasukanController extends Controller
         $dataPemasukan = CatatanPemasukan::find($id);
         if ($request->hasFile('gambar')) {
             $gambar = $request->file('gambar');
-            $gambar->storeAs('public/cttn_pemasukan', $gambar->hashName());
+            $gambar->storeAs('public/cttn_pemasukan/', $gambar->hashName());
 
             Storage::delete('public/cttn_pemasukan/' . basename($dataPemasukan->gambar));
             $dataPemasukan->gambar = $gambar->hashName();
             $dataPemasukan->judul = $request->judul;
+            $dataPemasukan->deskripsi = $request->deskripsi;
             $dataPemasukan->uang_masuk = intval($request->uang_masuk);
             $dataPemasukan->sumber_uang_masuk = $request->sumber_uang_masuk;
             $dataPemasukan->kategori_uang_masuk = $request->kategori_uang_masuk;
@@ -98,6 +100,7 @@ class CatatanPemasukanController extends Controller
             $dataPemasukan->update();
         } else {
             $dataPemasukan->judul = $request->judul;
+            $dataPemasukan->deskripsi = $request->deskripsi;
             $dataPemasukan->uang_masuk = intval($request->uang_masuk);
             $dataPemasukan->sumber_uang_masuk = $request->sumber_uang_masuk;
             $dataPemasukan->kategori_uang_masuk = $request->kategori_uang_masuk;
@@ -105,7 +108,7 @@ class CatatanPemasukanController extends Controller
             $dataPemasukan->update();
         }
 
-        return new CatatanPemasukanResource(true, 'Catatan Pemasukan Berhasil Diperbarui', $dataPemasukan);
+        return new CatatanPemasukanResource(true, 'Catatan Pemasukan ID ' . $id . ' Berhasil Diperbarui', $dataPemasukan);
     }
 
     /**
@@ -117,6 +120,6 @@ class CatatanPemasukanController extends Controller
         Storage::delete('public/cttn_pemasukan/' . basename($dataPemasukan->gambar));
         $dataPemasukan->delete();
 
-        return new CatatanPemasukanResource(true, 'Catatan Pemasukan Telah Dihapus', null);
+        return new CatatanPemasukanResource(true, 'Catatan Pemasukan ID ' . $id . ' Telah Dihapus', null);
     }
 }
