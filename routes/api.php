@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CatatanPengeluaranController as CatatanPengeluaranController;
 use App\Http\Controllers\Api\CatatanPemasukanController as CatatanPemasukanController;
+use App\Http\Controllers\Api\LiteraturController as LiteraturController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,3 +23,4 @@ use App\Http\Controllers\Api\CatatanPemasukanController as CatatanPemasukanContr
 
 Route::apiResource('/catatan-pengeluaran', CatatanPengeluaranController::class);
 Route::apiResource('/catatan-pemasukan', CatatanPemasukanController::class);
+Route::apiResource('/literatur', LiteraturController::class);
