@@ -1,23 +1,29 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\LiteraturResources;
+use App\Http\Resources\ApiResource;
 use App\Models\Literatur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class LiteraturController extends Controller
 {
-    //
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        $dataLiteratur = Literatur::all();
+        $dataLiteratur = Literatur::latest()->get();
 
-        return new LiteraturResources(true, 'Daftar Literatur', $dataLiteratur);
+        return new ApiResource(true, 'Daftar Literatur', $dataLiteratur);
     }
 
+
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
         $validateLiteratur = Validator::make($request->all(), [
@@ -35,16 +41,22 @@ class LiteraturController extends Controller
         $dataLiteratur->link = $request->link;
         $dataLiteratur->save();
 
-        return new LiteraturResources(true, 'Data Literatur Berhasil Disimpan', $dataLiteratur);
+        return new ApiResource(true, 'Data Literatur Berhasil Disimpan', $dataLiteratur);
     }
 
+    /**
+     * Display the specified resource.
+     */
     public function show($id)
     {
         $dataLiteratur = Literatur::find($id);
 
-        return new LiteraturResources(true, 'Detail Literatur Berdasarkan ID ' . $id, $dataLiteratur);
+        return new ApiResource(true, 'Detail Literatur Berdasarkan ID ' . $id, $dataLiteratur);
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, $id)
     {
         $validateLiteratur = Validator::make($request->all(), [
@@ -62,14 +74,17 @@ class LiteraturController extends Controller
         $dataLiteratur->link = $request->link;
         $dataLiteratur->update();
 
-        return new LiteraturResources(true, 'Data Literatur ID ' . $id . ' Berhasil Diperbarui', $dataLiteratur);
+        return new ApiResource(true, 'Data Literatur ID ' . $id . ' Berhasil Diperbarui', $dataLiteratur);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy($id)
     {
         $dataLiteratur = Literatur::find($id);
         $dataLiteratur->delete();
 
-        return new LiteraturResources(true, 'Data Literatur ID ' . $id . ' Telah Dihapus', $dataLiteratur);
+        return new ApiResource(true, 'Data Literatur ID ' . $id . ' Telah Dihapus', $dataLiteratur);
     }
 }

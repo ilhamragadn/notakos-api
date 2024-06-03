@@ -13,13 +13,10 @@ return new class extends Migration
     {
         Schema::create('catatan_pemasukans', function (Blueprint $table) {
             $table->id();
-            $table->string('gambar');
-            $table->string('judul');
-            $table->string('deskripsi')->nullable();
-            $table->integer('uang_masuk');
-            $table->string('sumber_uang_masuk');
-            $table->enum('kategori_uang_masuk', ['Cash', 'Cashless']);
-            $table->integer('total_uang_masuk');
+            $table->integer('nominal_uang_masuk');
+            $table->enum('kategori_uang_masuk', ['Cash', 'Cashless'])->default('Cash');
+            $table->unsignedBigInteger('catatan_id');
+            $table->foreign('catatan_id')->references('id')->on('catatans')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
         });
     }

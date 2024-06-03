@@ -1,10 +1,13 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\CatatanController as AdminCatatanController;
+use App\Http\Controllers\Api\Admin\LiteraturController as AdminLiteraturController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\CatatanPengeluaranController as CatatanPengeluaranController;
-use App\Http\Controllers\Api\CatatanPemasukanController as CatatanPemasukanController;
-use App\Http\Controllers\Api\LiteraturController as LiteraturController;
+use App\Http\Controllers\Api\User\AlokasiController;
+use App\Http\Controllers\Api\User\CatatanController;
+use App\Http\Controllers\Api\User\LiteraturController;
+use App\Http\Controllers\Api\User\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,15 +15,29 @@ use App\Http\Controllers\Api\LiteraturController as LiteraturController;
 |--------------------------------------------------------------------------
 |
 | Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
+| routes are loaded by the RouteServiceProvider within a group which
+| is assigned the "api" middleware group. Enjoy building your API!
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+// Route::middleware(['auth:sanctum', 'checkrole:user'])->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+// Route::get('/user', function (Request $request) {
 //     return $request->user();
 // });
 
-Route::apiResource('/catatan-pengeluaran', CatatanPengeluaranController::class);
-Route::apiResource('/catatan-pemasukan', CatatanPemasukanController::class);
-Route::apiResource('/literatur', LiteraturController::class);
+Route::middleware(['auth:sanctum', 'checkrole:user'])->group(function () {
+    Route::get('/profil', [ProfileController::class, 'show']);
+    Route::put('/profil', [ProfileController::class, 'updateProfile']);
+    Route::put('/profil/password', [ProfileController::class, 'updatePassword']);
+
+    Route::apiResource('/catatan', CatatanController::class);
+    Route::apiResource('/alokasi', AlokasiController::class);
+    Route::get('/literatur', [LiteraturController::class, 'index']);
+});
+
+Route::middleware(['auth:sanctum', 'checkrole:admin'])->group(function () {
+    Route::get('/dashboard-admin', [AdminCatatanController::class, 'index']);
+    Route::apiResource('/admin-literatur', AdminLiteraturController::class);
+});
