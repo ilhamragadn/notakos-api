@@ -56,6 +56,6 @@ class Catatan extends Model
      */
     public function alokasis(): BelongsToMany
     {
-        return $this->belongsToMany(Alokasi::class, 'alokasi_pemasukans')->withPivot(['variabel_teralokasi', 'saldo_teralokasi'])->withTimestamps();
+        return $this->belongsToMany(Alokasi::class, 'alokasi_pemasukans')->withPivot(['catatan_id', 'alokasi_id', 'variabel_teralokasi', 'saldo_teralokasi'])->withTimestamps();
     }
 }

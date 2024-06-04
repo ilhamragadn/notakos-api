@@ -177,15 +177,18 @@ class CatatanController extends Controller
         if ($kategori == 'Catatan Pemasukan') {
             $catatan->total_uang_masuk = intval(str_replace(['Rp', "\u{A0}", '.', ',00'], '', $request->total_uang_masuk));
 
-            if (!empty($pemasukanData['alokasis'])) {
+            if (!empty($request->alokasis)) {
                 $alokasiData = [];
-                foreach ($pemasukanData['alokasis'] as $alokasi) {
-                    $alokasiData[$alokasi['alokasi_id']] = [
-                        'variabel_teralokasi' => $alokasi['variabel_teralokasi'] ?? null,
-                        'saldo_teralokasi' => intval(str_replace(['Rp', "\u{A0}", '.', ',00'], '',  $alokasi['saldo_teralokasi'] ?? null)),
-                    ];
+                foreach ($request->alokasis as $alokasi) {
+                    if (isset($alokasi['pivot']) && isset($alokasi['pivot']['alokasi_id'])) {
+                        $alokasiData[$alokasi['pivot']['alokasi_id']] = [
+                            'variabel_teralokasi' => $alokasi['pivot']['variabel_teralokasi'] ?? null,
+                            'saldo_teralokasi' => intval(str_replace(['Rp', "\u{A0}", '.', ',00'], '', $alokasi['pivot']['saldo_teralokasi'] ?? 0)),
+                        ];
+                    } else {
+                        return response()->json(['error' => 'alokasi_id tidak ditemukan di salah satu alokasi'], 422);
+                    }
                 }
-                // Sync alokasi data
                 $catatan->alokasis()->sync($alokasiData);
             }
         } else {
@@ -193,23 +196,8 @@ class CatatanController extends Controller
         }
         $catatan->save();
 
-        if ($kategori == 'Catatan Pemasukan' && !empty($request->alokasis)) {
-            $alokasiData = [];
-            foreach ($request->alokasis as $alokasi) {
-                $alokasiData[$alokasi['alokasi_id']] = [
-                    'variabel_teralokasi' => $alokasi['variabel_teralokasi'] ?? null,
-                    'saldo_teralokasi' => intval(str_replace(['Rp', "\u{A0}", '.', ',00'], '', $alokasi['saldo_teralokasi'] ?? '0')),
-                ];
-            }
-            // Sync alokasi data
-            $catatan->alokasis()->sync($alokasiData);
-        }
-
-        if ($kategori == 'Catatan Pemasukan') {
-            $catatanPemasukanData = $request->catatan_pemasukan;
-            $catatanPemasukan = [];
-
-            foreach ($catatanPemasukanData as $pemasukanData) {
+        if ($kategori == 'Catatan Pemasukan' && !empty($request->catatan_pemasukan)) {
+            foreach ($request->catatan_pemasukan as $pemasukanData) {
                 $validatePemasukan = Validator::make($pemasukanData, [
                     'nominal_uang_masuk' => 'required',
                     'kategori_uang_masuk' => 'required',
@@ -220,17 +208,20 @@ class CatatanController extends Controller
                 }
 
                 $catatanPemasukan = CatatanPemasukan::where('catatan_id', $catatan->id)
-                    ->where('id', $pemasukanData['id'] ?? null)
+                    ->where('id', $pemasukanData['id'])
                     ->first();
+
+                if (!$catatanPemasukan) {
+                    return response()->json(['error' => 'Catatan Pemasukan tidak ditemukan'], 404);
+                }
 
                 $catatanPemasukan->nominal_uang_masuk = intval(str_replace(['Rp', "\u{A0}", '.', ',00'], '', $pemasukanData['nominal_uang_masuk']));
                 $catatanPemasukan->kategori_uang_masuk = $pemasukanData['kategori_uang_masuk'];
-                $catatanPemasukan->catatan_id = $catatan->id; // Set kunci asing
+                $catatanPemasukan->catatan_id = $catatan->id;
 
                 $catatanPemasukan->save();
             }
-
-            return new ApiResource(true, 'Catatan Berhasil Diperbarui', ['catatan' => $catatan, 'kategori_pemasukan' => $catatanPemasukan]);
+            return new ApiResource(true, 'Catatan Berhasil Diperbarui', ['catatan' => $catatan]);
         } else {
             $catatanPengeluaranData = $request->catatan_pengeluaran;
             $catatanPengeluaran = [];
@@ -264,7 +255,7 @@ class CatatanController extends Controller
                 $catatanPengeluaran->save();
             }
 
-            return new ApiResource(true, 'Catatan Berhasil Disimpan', ['catatan' => $catatan, 'kategori_pemasukan' => $catatanPengeluaran]);
+            return new ApiResource(true, 'Catatan Berhasil Disimpan', ['catatan' => $catatan, 'kategori_pengeluaran' => $catatanPengeluaran]);
         }
     }
 
