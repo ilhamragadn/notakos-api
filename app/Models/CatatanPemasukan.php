@@ -28,6 +28,6 @@ class CatatanPemasukan extends Model
      */
     public function catatan(): BelongsTo
     {
-        return $this->belongsTo(Catatan::class);
+        return $this->belongsTo(Catatan::class, 'catatan_id');
     }
 }

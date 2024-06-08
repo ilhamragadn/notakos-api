@@ -26,7 +26,7 @@ class Catatan extends Model
      */
     public function users(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
@@ -36,7 +36,7 @@ class Catatan extends Model
      */
     public function catatanPemasukan(): HasMany
     {
-        return $this->hasMany(CatatanPemasukan::class);
+        return $this->hasMany(CatatanPemasukan::class, 'catatan_id');
     }
 
     /**
@@ -46,7 +46,7 @@ class Catatan extends Model
      */
     public function catatanPengeluaran(): HasMany
     {
-        return $this->hasMany(CatatanPengeluaran::class);
+        return $this->hasMany(CatatanPengeluaran::class, 'catatan_id');
     }
 
     /**

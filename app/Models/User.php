@@ -45,6 +45,6 @@ class User extends Authenticatable
 
     public function catatans()
     {
-        return $this->hasMany(Catatan::class);
+        return $this->hasMany(Catatan::class, 'user_id');
     }
 }

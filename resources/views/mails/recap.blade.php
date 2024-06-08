@@ -21,15 +21,15 @@
         </p>
         <p style="font-weight: bold">Untuk detail alokasi keuangan yang telah dibuat beserta total pengeluaran
             berdasarkan alokasi adalah sebagai berikut:</p>
-        {{-- <p>jenis kebutuhan {{ $mailToParent['jenisKebutuhan'] }}</p> --}}
         <ul>
             @foreach ($mailToParent['variabelTiapAlokasi'] as $index => $variabel)
                 @if ($variabel !== 'Semua Alokasi')
-                    <li>{{ $variabel }}: {{ $mailToParent['persentaseTiapAlokasi'][$index] }}%
+                    <li>{{ ucwords($variabel) }}: {{ $mailToParent['persentaseTiapAlokasi'][$index] }}%
                         <br>
-                        Rp {{ $mailToParent['totalPengeluaranTiapAlokasi'][$index] }}.
+                        Total pengeluaran: Rp
+                        {{ number_format($mailToParent['totalPengeluaranTiapAlokasi'][$variabel], 0, ',', '.') }}.
                         <br>
-                        Jenis kebutuhan: {{ $mailToParent['jenisKebutuhan'][$index] }}
+                        <br>
                     </li>
                 @endif
             @endforeach

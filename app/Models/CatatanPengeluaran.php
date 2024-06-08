@@ -19,11 +19,9 @@ class CatatanPengeluaran extends Model
         'nama_barang',
         'harga_barang',
         'satuan_barang',
-        'uang_keluar', //anggap harga x satuan
-        'jenis_pengeluaran', //makan minum jajan, transport, hiburan, dll
-        'sumber_uang_keluar', //pakai gaji, atau sumber uang yg lain
-        'kategori_uang_keluar', //cash or cashless
-        'total_uang_keluar',
+        'nominal_uang_keluar',
+        'jenis_kebutuhan',
+        'kategori_uang_keluar',
     ];
 
     /**
