@@ -20,13 +20,6 @@ use App\Http\Controllers\Api\User\ProfileController;
 |
 */
 
-// Route::middleware(['auth:sanctum', 'checkrole:user'])->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-// Route::get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
 Route::middleware(['auth:sanctum', 'checkrole:user'])->group(function () {
     Route::get('/profil', [ProfileController::class, 'show']);
     Route::put('/profil', [ProfileController::class, 'updateProfile']);
@@ -35,9 +28,4 @@ Route::middleware(['auth:sanctum', 'checkrole:user'])->group(function () {
     Route::apiResource('/catatan', CatatanController::class);
     Route::apiResource('/alokasi', AlokasiController::class);
     Route::get('/literatur', [LiteraturController::class, 'index']);
-});
-
-Route::middleware(['auth:sanctum', 'checkrole:admin'])->group(function () {
-    Route::get('/dashboard-admin', [AdminCatatanController::class, 'index']);
-    Route::apiResource('/admin-literatur', AdminLiteraturController::class);
 });

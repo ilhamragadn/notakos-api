@@ -24,7 +24,7 @@ class RedirectIfAuthenticated
                 $roles = Auth::user()->role;
                 switch ($roles) {
                     case 'admin':
-                        return redirect('/dashboard-admin');
+                        return redirect()->route('admin.dashboard');
                     case 'user':
                         return redirect('/catatan');
                     default:

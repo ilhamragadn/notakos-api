@@ -26,7 +26,7 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => ['required', 'string', function ($attribute, $value, $fail) {
-                $validRoles = ['admin', 'user'];
+                $validRoles = ['user'];
                 if (!in_array($value, $validRoles)) {
                     $fail($attribute . ' is invalid.');
                 }
@@ -52,5 +52,38 @@ class RegisteredUserController extends Controller
         ]);
 
         // return response()->noContent();
+    }
+
+    /**
+     * Handle an incoming registration request for Web (Admin).
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function storeWeb(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role' => ['required', 'string', function ($attribute, $value, $fail) {
+                $validRoles = ['admin'];
+                if (!in_array($value, $validRoles)) {
+                    $fail($attribute . ' is invalid.');
+                }
+            }]
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+        ]);
+
+        event(new Registered($user));
+
+        Auth::login($user);
+
+        return redirect()->route('admin.dashboard');
     }
 }
